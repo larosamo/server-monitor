@@ -24,3 +24,4 @@ hs_err_pid*
 
 #OSX file
 .DS_Store
+/target/
