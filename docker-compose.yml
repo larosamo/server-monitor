@@ -1,4 +1,4 @@
-mongodb:
+mongo:
   image: mongo:latest
   ports:
     - "27017:27017"
@@ -7,6 +7,6 @@ mongodb:
 app:
   image: restalion/server-monitor:latest
   links:
-    - mongodb
+    - mongo
   ports:
     - "8080:8080"
