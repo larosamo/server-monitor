@@ -1,0 +1,144 @@
+package org.restalion.servermonitor.ui;
+
+import java.util.ArrayList;
+
+import org.restalion.servermonitor.dto.MonitorDto;
+import org.restalion.servermonitor.dto.ServerDto;
+import org.restalion.servermonitor.service.MonitorService;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.renderer.IconRenderer;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.lumo.Lumo;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Theme(value = Lumo.class, variant = Lumo.DARK)
+@Route("dashboard")
+@Slf4j
+public class MainUI extends HorizontalLayout {
+	
+	ServerDto serverInfo;
+	Binder<ServerDto> binder;
+	Grid<MonitorDto> historic;
+
+	public MainUI(@Autowired MonitorService service) {
+		
+		add(createLeftPanel(service));
+		add(createRightPanel(service));
+		
+	}
+	
+	private VerticalLayout createRightPanel(MonitorService service) {
+		VerticalLayout rightPanel = new VerticalLayout();
+		serverInfo = ServerDto.builder().build();
+		Label serverDetail = new Label("Server Details");
+		TextField name = new TextField("Name");
+		name.setEnabled(Boolean.FALSE);
+		TextField url = new TextField("URL");
+		url.setEnabled(Boolean.FALSE);
+		url.setWidth("400px");
+		Checkbox active = new Checkbox("Active");
+		active.setEnabled(Boolean.FALSE);
+		Label serverHistoric = new Label("Historic Data");
+		
+		binder = new Binder<>();
+		binder.forField(name).bind(ServerDto::getName, ServerDto::setName);
+		binder.forField(url).bind(ServerDto::getUrl, ServerDto::setUrl);
+		binder.forField(active).bind(ServerDto::getActive, ServerDto::setActive);
+		
+		binder.readBean(serverInfo);
+		
+		historic = new Grid<>();
+		historic.setSelectionMode(SelectionMode.NONE);
+		
+		historic.addColumn(MonitorDto::getServerName).setHeader("Server Name");
+		historic.addColumn(new IconRenderer<MonitorDto>(
+                item -> item.getStatus().equals("OK") ? createCircle("GREEN")
+                        : createCircle("RED"),
+                item -> "")).setHeader("Status");
+		historic.addColumn(MonitorDto::getTime).setHeader("Timestamp").setSortable(Boolean.TRUE);
+		
+		rightPanel.add(serverDetail);
+		rightPanel.add(name);
+		rightPanel.add(url);
+		rightPanel.add(active);
+		rightPanel.add(serverHistoric);
+		rightPanel.add(historic);
+		
+		return rightPanel;
+	}
+	
+	private VerticalLayout createLeftPanel(MonitorService service) {
+		VerticalLayout leftPanel = new VerticalLayout();
+		Grid<MonitorDto> statusGrid = new Grid<>();
+		Grid<ServerDto> monitoredServers = new Grid<>();
+		
+		log.debug("Número de líneas monitorizadas" + service.monitor().size());
+		statusGrid.setItems(service.monitor());
+		statusGrid.setSelectionMode(SelectionMode.NONE);
+		statusGrid.addColumn(MonitorDto::getServerName).setHeader("Server Name");
+		statusGrid.addColumn(new IconRenderer<MonitorDto>(
+                item -> item.getStatus().equals("OK") ? createCircle("GREEN")
+                        : createCircle("RED"),
+                item -> "")).setHeader("Status");
+		
+		log.debug("Número de servidores" + service.monitor().size());
+		monitoredServers.setItems(service.getServers());
+		monitoredServers.addColumn(ServerDto::getName).setHeader("Server Name");
+		monitoredServers.setSelectionMode(SelectionMode.SINGLE);
+
+		monitoredServers.addColumn(new IconRenderer<ServerDto>(
+                item -> item.getActive() ? createCheck()
+                        : createClose(),
+                item -> "")).setHeader("Active");
+		monitoredServers.addSelectionListener(listener -> {
+			if (listener.getFirstSelectedItem().isPresent()) {
+				serverInfo = listener.getFirstSelectedItem().get();
+				binder.readBean(serverInfo);
+				historic.setItems(service.historic(serverInfo.getName()));
+			} else {
+				serverInfo = ServerDto.builder().build();
+				binder.readBean(serverInfo);
+				historic.setItems(new ArrayList<MonitorDto>());
+			}
+		});
+		leftPanel.add(new Label("Monitored Servers"));
+		leftPanel.add(monitoredServers);
+		leftPanel.add(new Label("Current Status"));
+		leftPanel.add(statusGrid);
+		leftPanel.add(new Button("Refresh Status"));
+		
+		return leftPanel;
+	}
+	
+	private Icon createCheck() {
+		Icon check = VaadinIcon.CHECK.create();
+		check.setColor("GREEN");
+		return check;
+	}
+	
+	private Icon createClose() {
+		Icon close = VaadinIcon.CLOSE.create();
+		close.setColor("GREY");
+		return close;
+	}
+	
+	private Icon createCircle(String color) {
+		Icon circle = VaadinIcon.CIRCLE.create();
+		circle.setColor(color);
+		return circle;
+	}
+}
