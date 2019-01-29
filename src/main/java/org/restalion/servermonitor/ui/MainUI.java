@@ -37,6 +37,9 @@ public class MainUI extends HorizontalLayout {
 	Binder<ServerDto> binder;
 	Grid<MonitorDto> historic;
 	Grid<MonitorDto> statusGrid;
+	TextField name;
+	TextField url;
+	Checkbox active;
 
 	public MainUI(@Autowired MonitorService service) {
 		
@@ -49,12 +52,12 @@ public class MainUI extends HorizontalLayout {
 		VerticalLayout rightPanel = new VerticalLayout();
 		serverInfo = ServerDto.builder().build();
 		Label serverDetail = new Label("Server Details");
-		TextField name = new TextField("Name");
+		name = new TextField("Name");
 		name.setEnabled(Boolean.FALSE);
-		TextField url = new TextField("URL");
+		url = new TextField("URL");
 		url.setEnabled(Boolean.FALSE);
 		url.setWidth("400px");
-		Checkbox active = new Checkbox("Active");
+		active = new Checkbox("Active");
 		active.setEnabled(Boolean.FALSE);
 		Label serverHistoric = new Label("Historic Data");
 		
@@ -89,6 +92,8 @@ public class MainUI extends HorizontalLayout {
 		VerticalLayout leftPanel = new VerticalLayout();
 		statusGrid = new Grid<>();
 		Grid<ServerDto> monitoredServers = new Grid<>();
+		Button editButton = new Button("Edit");
+		Button saveButton = new Button("Save");
 		
 		log.debug("Número de servidores registrados: " + service.getServers().size());
 		statusGrid.setItems(service.monitor());
@@ -112,10 +117,16 @@ public class MainUI extends HorizontalLayout {
 				serverInfo = listener.getFirstSelectedItem().get();
 				binder.readBean(serverInfo);
 				historic.setItems(service.historic(serverInfo.getName()));
+				editButton.setEnabled(Boolean.TRUE);
 			} else {
 				serverInfo = ServerDto.builder().build();
 				binder.readBean(serverInfo);
 				historic.setItems(new ArrayList<MonitorDto>());
+				editButton.setEnabled(Boolean.FALSE);
+				name.setEnabled(Boolean.FALSE);
+				url.setEnabled(Boolean.FALSE);
+				active.setEnabled(Boolean.FALSE);
+				saveButton.setEnabled(Boolean.FALSE);
 			}
 		});
 		
@@ -129,7 +140,41 @@ public class MainUI extends HorizontalLayout {
 			}
 		});
 		
-		leftPanel.add(refreshButton);
+		editButton.setIcon(VaadinIcon.EDIT.create());
+		editButton.setEnabled(Boolean.FALSE);
+		editButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+			
+			@Override
+			public void onComponentEvent(ClickEvent<Button> event) {
+				name.setEnabled(Boolean.TRUE);
+				url.setEnabled(Boolean.TRUE);
+				active.setEnabled(Boolean.TRUE);
+				saveButton.setEnabled(Boolean.TRUE);
+				editButton.setEnabled(Boolean.FALSE);
+			}
+		});
+		
+		saveButton.setIcon(VaadinIcon.INSERT.create());
+		saveButton.setEnabled(Boolean.FALSE);
+		saveButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+			
+			@Override
+			public void onComponentEvent(ClickEvent<Button> event) {
+				System.out.println("Saving");
+				name.setEnabled(Boolean.FALSE);
+				url.setEnabled(Boolean.FALSE);
+				active.setEnabled(Boolean.FALSE);
+				saveButton.setEnabled(Boolean.FALSE);
+				editButton.setEnabled(Boolean.TRUE);
+			}
+		});
+		
+		HorizontalLayout buttonPanel = new HorizontalLayout();
+		
+		buttonPanel.add(refreshButton);
+		buttonPanel.add(editButton);
+		buttonPanel.add(saveButton);
+		leftPanel.add(buttonPanel);
 		leftPanel.add(new Label("Monitored Servers"));
 		leftPanel.add(monitoredServers);
 		leftPanel.add(new Label("Current Status"));
