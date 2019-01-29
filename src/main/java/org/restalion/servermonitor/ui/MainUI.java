@@ -1,12 +1,15 @@
 package org.restalion.servermonitor.ui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.restalion.servermonitor.dto.MonitorDto;
 import org.restalion.servermonitor.dto.ServerDto;
 import org.restalion.servermonitor.service.MonitorService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.grid.Grid;
@@ -33,6 +36,7 @@ public class MainUI extends HorizontalLayout {
 	ServerDto serverInfo;
 	Binder<ServerDto> binder;
 	Grid<MonitorDto> historic;
+	Grid<MonitorDto> statusGrid;
 
 	public MainUI(@Autowired MonitorService service) {
 		
@@ -83,10 +87,10 @@ public class MainUI extends HorizontalLayout {
 	
 	private VerticalLayout createLeftPanel(MonitorService service) {
 		VerticalLayout leftPanel = new VerticalLayout();
-		Grid<MonitorDto> statusGrid = new Grid<>();
+		statusGrid = new Grid<>();
 		Grid<ServerDto> monitoredServers = new Grid<>();
 		
-		log.debug("Número de líneas monitorizadas" + service.monitor().size());
+		log.debug("Número de servidores registrados: " + service.getServers().size());
 		statusGrid.setItems(service.monitor());
 		statusGrid.setSelectionMode(SelectionMode.NONE);
 		statusGrid.addColumn(MonitorDto::getServerName).setHeader("Server Name");
@@ -95,7 +99,6 @@ public class MainUI extends HorizontalLayout {
                         : createCircle("RED"),
                 item -> "")).setHeader("Status");
 		
-		log.debug("Número de servidores" + service.monitor().size());
 		monitoredServers.setItems(service.getServers());
 		monitoredServers.addColumn(ServerDto::getName).setHeader("Server Name");
 		monitoredServers.setSelectionMode(SelectionMode.SINGLE);
@@ -115,11 +118,22 @@ public class MainUI extends HorizontalLayout {
 				historic.setItems(new ArrayList<MonitorDto>());
 			}
 		});
+		
+		Button refreshButton = new Button("Refresh Status");
+		refreshButton.setIcon(VaadinIcon.REFRESH.create());
+		refreshButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+			
+			@Override
+			public void onComponentEvent(ClickEvent<Button> event) {
+				statusGrid.setItems(service.monitor());
+			}
+		});
+		
+		leftPanel.add(refreshButton);
 		leftPanel.add(new Label("Monitored Servers"));
 		leftPanel.add(monitoredServers);
 		leftPanel.add(new Label("Current Status"));
 		leftPanel.add(statusGrid);
-		leftPanel.add(new Button("Refresh Status"));
 		
 		return leftPanel;
 	}
