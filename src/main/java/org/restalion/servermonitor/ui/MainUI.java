@@ -37,6 +37,7 @@ public class MainUI extends HorizontalLayout {
 	Binder<ServerDto> binder;
 	Grid<MonitorDto> historic;
 	Grid<MonitorDto> statusGrid;
+	Grid<ServerDto> monitoredServers;
 	TextField name;
 	TextField url;
 	Checkbox active;
@@ -91,9 +92,10 @@ public class MainUI extends HorizontalLayout {
 	private VerticalLayout createLeftPanel(MonitorService service) {
 		VerticalLayout leftPanel = new VerticalLayout();
 		statusGrid = new Grid<>();
-		Grid<ServerDto> monitoredServers = new Grid<>();
+		monitoredServers = new Grid<>();
 		Button editButton = new Button("Edit");
 		Button saveButton = new Button("Save");
+		Button addButton = new Button("Add");
 		
 		log.debug("Número de servidores registrados: " + service.getServers().size());
 		statusGrid.setItems(service.monitor());
@@ -160,18 +162,41 @@ public class MainUI extends HorizontalLayout {
 			
 			@Override
 			public void onComponentEvent(ClickEvent<Button> event) {
-				System.out.println("Saving");
 				name.setEnabled(Boolean.FALSE);
 				url.setEnabled(Boolean.FALSE);
 				active.setEnabled(Boolean.FALSE);
 				saveButton.setEnabled(Boolean.FALSE);
 				editButton.setEnabled(Boolean.TRUE);
+				
+				monitoredServers.getSelectedItems().forEach(server -> {
+					
+					ServerDto dto = ServerDto.builder()
+							.active(active.getValue())
+							.name(name.getValue())
+							.url(url.getValue())
+							.id(server.getId())
+							.build();
+					
+					service.save(dto);
+				});
+				
+				monitoredServers.setItems(service.getServers());
+				statusGrid.setItems(service.monitor());
+			}
+		});
+		
+		addButton.setIcon(VaadinIcon.PLUS_SQUARE_O.create());
+		addButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+			@Override
+			public void onComponentEvent(ClickEvent<Button> event) {
+				
 			}
 		});
 		
 		HorizontalLayout buttonPanel = new HorizontalLayout();
 		
 		buttonPanel.add(refreshButton);
+		buttonPanel.add(addButton);
 		buttonPanel.add(editButton);
 		buttonPanel.add(saveButton);
 		leftPanel.add(buttonPanel);

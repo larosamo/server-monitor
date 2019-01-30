@@ -93,4 +93,8 @@ public class MonitorServiceImpl implements MonitorService {
 	public List<ServerDto> getServers() {
 		return repo.findAll();
 	}
+	
+	public ServerDto save(ServerDto server) {
+		return repo.save(server);
+	}
 }
