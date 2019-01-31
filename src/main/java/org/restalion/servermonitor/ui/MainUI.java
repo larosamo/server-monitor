@@ -96,6 +96,7 @@ public class MainUI extends HorizontalLayout {
 		Button editButton = new Button("Edit");
 		Button saveButton = new Button("Save");
 		Button addButton = new Button("Add");
+		Button deleteButton = new Button("Delete");
 		
 		log.debug("Número de servidores registrados: " + service.getServers().size());
 		statusGrid.setItems(service.monitor());
@@ -111,7 +112,7 @@ public class MainUI extends HorizontalLayout {
 		monitoredServers.setSelectionMode(SelectionMode.SINGLE);
 
 		monitoredServers.addColumn(new IconRenderer<ServerDto>(
-                item -> item.getActive() ? createCheck()
+				item -> item.getActive() ? createCheck()
                         : createClose(),
                 item -> "")).setHeader("Active");
 		monitoredServers.addSelectionListener(listener -> {
@@ -168,17 +169,26 @@ public class MainUI extends HorizontalLayout {
 				saveButton.setEnabled(Boolean.FALSE);
 				editButton.setEnabled(Boolean.TRUE);
 				
-				monitoredServers.getSelectedItems().forEach(server -> {
-					
+				if (monitoredServers.getSelectedItems().isEmpty()) {
 					ServerDto dto = ServerDto.builder()
 							.active(active.getValue())
 							.name(name.getValue())
 							.url(url.getValue())
-							.id(server.getId())
 							.build();
-					
 					service.save(dto);
-				});
+				} else {
+					monitoredServers.getSelectedItems().forEach(server -> {
+						
+						ServerDto dto = ServerDto.builder()
+								.active(active.getValue())
+								.name(name.getValue())
+								.url(url.getValue())
+								.id(server.getId())
+								.build();
+						
+						service.save(dto);
+					});
+				}
 				
 				monitoredServers.setItems(service.getServers());
 				statusGrid.setItems(service.monitor());
@@ -189,9 +199,21 @@ public class MainUI extends HorizontalLayout {
 		addButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
 			@Override
 			public void onComponentEvent(ClickEvent<Button> event) {
-				
+				monitoredServers.select(null);
+				addButton.setEnabled(Boolean.FALSE);
+				editButton.setEnabled(Boolean.FALSE);
+				saveButton.setEnabled(Boolean.TRUE);
+				name.setEnabled(Boolean.TRUE);
+				url.setEnabled(Boolean.TRUE);
+				active.setEnabled(Boolean.TRUE);
 			}
 		});
+		
+//		deleteButton.setIcon(VaadinIcon.CLOSE.create());
+//		addButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+//
+//		});
+		
 		
 		HorizontalLayout buttonPanel = new HorizontalLayout();
 		
