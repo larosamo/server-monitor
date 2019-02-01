@@ -25,3 +25,8 @@ hs_err_pid*
 #OSX file
 .DS_Store
 /target/
+
+# eclipse files
+.project
+.classpath
+/.settings/
