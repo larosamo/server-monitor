@@ -97,4 +97,8 @@ public class MonitorServiceImpl implements MonitorService {
 	public ServerDto save(ServerDto server) {
 		return repo.save(server);
 	}
+	
+	public void remove(ServerDto server) {
+		repo.delete(server);
+	}
 }

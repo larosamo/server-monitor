@@ -214,9 +214,18 @@ public class MainUI extends HorizontalLayout {
 		
 		deleteButton.setIcon(VaadinIcon.CLOSE.create());
 		deleteButton.setEnabled(Boolean.FALSE);
-//		addButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
-//
-//		});
+		deleteButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+
+			@Override
+			public void onComponentEvent(ClickEvent<Button> event) {
+				
+				monitoredServers.getSelectedItems().forEach(server -> {
+					service.remove(server);
+					monitoredServers.setItems(service.getServers());
+				});
+			}
+
+		});
 		
 		
 		HorizontalLayout buttonPanel = new HorizontalLayout();

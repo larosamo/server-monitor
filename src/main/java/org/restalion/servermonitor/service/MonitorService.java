@@ -13,4 +13,5 @@ public interface MonitorService {
 	public Boolean deactivate(String serverName);
 	public List<ServerDto> getServers();
 	public ServerDto save(ServerDto server);
+	public void remove(ServerDto server);
 }
