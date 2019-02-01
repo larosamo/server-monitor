@@ -121,11 +121,13 @@ public class MainUI extends HorizontalLayout {
 				binder.readBean(serverInfo);
 				historic.setItems(service.historic(serverInfo.getName()));
 				editButton.setEnabled(Boolean.TRUE);
+				deleteButton.setEnabled(Boolean.TRUE);
 			} else {
 				serverInfo = ServerDto.builder().build();
 				binder.readBean(serverInfo);
 				historic.setItems(new ArrayList<MonitorDto>());
 				editButton.setEnabled(Boolean.FALSE);
+				deleteButton.setEnabled(Boolean.FALSE);
 				name.setEnabled(Boolean.FALSE);
 				url.setEnabled(Boolean.FALSE);
 				active.setEnabled(Boolean.FALSE);
@@ -154,6 +156,7 @@ public class MainUI extends HorizontalLayout {
 				active.setEnabled(Boolean.TRUE);
 				saveButton.setEnabled(Boolean.TRUE);
 				editButton.setEnabled(Boolean.FALSE);
+				deleteButton.setEnabled(Boolean.FALSE);
 			}
 		});
 		
@@ -209,7 +212,8 @@ public class MainUI extends HorizontalLayout {
 			}
 		});
 		
-//		deleteButton.setIcon(VaadinIcon.CLOSE.create());
+		deleteButton.setIcon(VaadinIcon.CLOSE.create());
+		deleteButton.setEnabled(Boolean.FALSE);
 //		addButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
 //
 //		});
@@ -221,6 +225,7 @@ public class MainUI extends HorizontalLayout {
 		buttonPanel.add(addButton);
 		buttonPanel.add(editButton);
 		buttonPanel.add(saveButton);
+		buttonPanel.add(deleteButton);
 		leftPanel.add(buttonPanel);
 		leftPanel.add(new Label("Monitored Servers"));
 		leftPanel.add(monitoredServers);
