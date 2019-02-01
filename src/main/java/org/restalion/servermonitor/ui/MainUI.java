@@ -203,7 +203,6 @@ public class MainUI extends HorizontalLayout {
 			@Override
 			public void onComponentEvent(ClickEvent<Button> event) {
 				monitoredServers.select(null);
-				addButton.setEnabled(Boolean.FALSE);
 				editButton.setEnabled(Boolean.FALSE);
 				saveButton.setEnabled(Boolean.TRUE);
 				name.setEnabled(Boolean.TRUE);
