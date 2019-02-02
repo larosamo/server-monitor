@@ -28,7 +28,7 @@ Instructions to start easily using this project
 ### Topology
 Application itself it's very simple, just a Spring Boot application using Vaadin and Spring Data to access to a MongoDB database.
 
-![Application Topology](https://github.com/restalion/server-monitor/tree/master/img/server-monitor-topology.png "server-monitor topology")
+![Application Topology](img/server-monitor-topology.png "server-monitor topology")
 ### Elements
 #### Endpoints
 #### Views
