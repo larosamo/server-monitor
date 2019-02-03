@@ -1,7 +1,7 @@
 # server-monitor
 Extremely simple server monitor. Just to monitor if server is up&running, also maintain historical monitoring data and can add, remove, activate and deactivate servers to monitor.
 
-![Main](img/server-monitor-main.png "server-monitor main")
+![Main](img/server-monitor-main.png "server-monitor main" =200x)
 
 ## Quick start
 Instructions to start easily using this project
@@ -55,14 +55,14 @@ java -jar server-monitor-0.0.3-SNAPSHOT.jar
 ### Topology
 Application itself it's very simple, just a Spring Boot application using Vaadin and Spring Data to access to a MongoDB database.
 
-![Application Topology](img/server-monitor-topology.png "server-monitor topology")
+![Application Topology](img/server-monitor-topology.png "server-monitor topology" =150x)
 
 Both parts can be executed independient elements, as docker images os as a whole using the provided docker-compose.yml file.
 
 ### Elements
 Going deeper into the project we can view the elements below:
 
-![Elements](img/server-monitor-elements.png "server-monitor elements")
+![Elements](img/server-monitor-elements.png "server-monitor elements" =150x)
 #### Views
 Only one view it's available. It shows four different sections organized in two panels.
 
@@ -72,7 +72,7 @@ In this panel you can find the monitored servers and their status.
 ###### Monitored Servers grid
 A list of the monitored servers, you can see a green tick when the monitorization is active and a grey cross when its inactive.
 
-![Monitored Servers grid](img/server-monitor-monitored-servers.png "Monitored Servers Grid")
+![Monitored Servers grid](img/server-monitor-monitored-servers.png "Monitored Servers Grid" =100x)
 
 ###### Current Status grid
 ###### Server Details
