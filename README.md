@@ -14,12 +14,21 @@ Instructions to start easily using this project
 
 #### Execution
 ##### Review configuration
-1. Review applicaton.properties:
+1. Review DB connection properties in applicaton.properties:
     1. **spring.data.mongodb.uri:** maybe you need to use *spring.data.mongodb.host* and *spring.data.mongodb.port* instead
-
     1.**spring.data.mongodb.database:** if you want to change the database
-
     1.**server.port:** if you want to change the port that the application is using
+1. Review initialization properties in application.properties:
+    1. **initialize:** if you need to initialize DB. Please review initialization section in execution parameters.
+    1.**reset:** if you need to reset historical table.
+1. Compile the application: 
+
+```mvn clean install´´
+
+1. Go to the target folder
+1. Execute the application
+
+```java -jar server-monitor-0.0.3-SNAPSHOT.jar´´´
 
 ### Docker
 #### Prerrequisites
@@ -57,5 +66,7 @@ Going deeper into the project we can view the elements below:
 #### Database
 
 ## Next Steps
+### Improvements
+1. Add pagination to tables 
 
 ## Contact
