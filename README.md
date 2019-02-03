@@ -67,7 +67,13 @@ Going deeper into the project we can view the elements below:
 Only one view it's available. It shows four different sections organized in two panels.
 
 ##### Right Panel
+In this panel you can find the monitored servers and their status.
+
 ###### Monitored Servers grid
+A list of the monitored servers, you can see a green tick when the monitorization is active and a grey cross when its inactive.
+
+![Monitored Servers grid](img/server-monitor-monitored-servers.png "Monitored Servers Grid")
+
 ###### Current Status grid
 ###### Server Details
 ###### Historic data
@@ -77,6 +83,7 @@ Only one view it's available. It shows four different sections organized in two 
 ##### /historic
 ##### /add
 ##### /servers
+
 ##### /activate
 ##### /deactivate
 #### Services
