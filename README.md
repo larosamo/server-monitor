@@ -63,8 +63,22 @@ Both parts can be executed independient elements, as docker images os as a whole
 Going deeper into the project we can view the elements below:
 
 ![Elements](img/server-monitor-elements.png "server-monitor elements")
-#### Endpoints
 #### Views
+Only one view it's available. It shows four different sections organized in two panels.
+
+##### Right Panel
+###### Monitored Servers grid
+###### Current Status grid
+###### Server Details
+###### Historic data
+
+#### Endpoints
+##### /monitor
+##### /historic
+##### /add
+##### /servers
+##### /activate
+##### /deactivate
 #### Services
 #### Scheduled processes
 #### Database
