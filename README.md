@@ -29,7 +29,13 @@ Instructions to start easily using this project
 Application itself it's very simple, just a Spring Boot application using Vaadin and Spring Data to access to a MongoDB database.
 
 ![Application Topology](img/server-monitor-topology.png "server-monitor topology")
+
+Both parts can be executed independient elements, as docker images os as a whole using the provided docker-compose.yml file.
+
 ### Elements
+Going deeper into the project we can view the elements below:
+
+![Elements](img/server-monitor-elements.png "server-monitor elements")
 #### Endpoints
 #### Views
 #### Database
