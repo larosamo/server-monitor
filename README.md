@@ -16,7 +16,9 @@ Instructions to start easily using this project
 ##### Review configuration
 1. Review applicaton.properties:
     1. **spring.data.mongodb.uri:** maybe you need to use *spring.data.mongodb.host* and *spring.data.mongodb.port* instead
+
     1.**spring.data.mongodb.database:** if you want to change the database
+
     1.**server.port:** if you want to change the port that the application is using
 
 ### Docker
