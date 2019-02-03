@@ -27,7 +27,7 @@ Instructions to start easily using this project
 mvn clean install
 ```
 
-1. Go to the target folde
+1. Go to the target folder
 1. Execute the application
 
 ```
@@ -66,26 +66,45 @@ Going deeper into the project we can view the elements below:
 #### Views
 Only one view it's available. It shows four different sections organized in two panels.
 
-##### Right Panel
+##### Left Panel
 In this panel you can find the monitored servers and their status.
+
+###### Button panel
+
 
 ###### Monitored Servers grid
 A list of the monitored servers, you can see a green tick when the monitorization is active and a grey cross when its inactive.
 
 ![Monitored Servers grid](img/server-monitor-monitored-servers.png "Monitored Servers Grid")
 
+This grid is used to select the server to be shown in the right panel, it also interacts with the button panel in the top.
+
 ###### Current Status grid
+#### Right Panel
 ###### Server Details
 ###### Historic data
 
 #### Endpoints
+Available endpoints are:
+
 ##### /monitor
+Launchs the process that monitors all the active servers. It returns a JSON with the information of each server and stores this info into the historic table.
+
 ##### /historic
+Returns the values stored into the historic table.
+
 ##### /add
+Adds a new server to be monitored to the system.
+
 ##### /servers
+Returns the list of servers monitored, active and inactive.
 
 ##### /activate
+Activates one server already added to the system.
+
 ##### /deactivate
+Deactivates one server already added to the system.
+
 #### Services
 #### Scheduled processes
 #### Database
@@ -93,5 +112,13 @@ A list of the monitored servers, you can see a green tick when the monitorizatio
 ## Next Steps
 ### Improvements
 1. Add pagination to tables 
+
+## Software
+### IDE
+Eclipse
+### REST tests
+Postman
+### Browsers
+Safari, Firefox, Chrome and Opera 
 
 ## Contact
