@@ -70,7 +70,13 @@ Only one view it's available. It shows four different sections organized in two 
 In this panel you can find the monitored servers and their status.
 
 ###### Button panel
-
+![Buttons](img/server-monitor-button.png "server-monitor buttons")
+Allow actions as:
+1. Refresh: Forces the application to monitor all the active servers and shows the updated results.
+1. Add: Enables Server Details panel to add a new server to be monitored.
+1. Edit: Enables Server Details panel to edit the selected Server.
+1. Save: Saves changes done in the Server Details panel.
+1. Delete: Removes selected server from the list of monitored servers.
 
 ###### Monitored Servers grid
 A list of the monitored servers, you can see a green tick when the monitorization is active and a grey cross when its inactive.
@@ -80,10 +86,12 @@ A list of the monitored servers, you can see a green tick when the monitorizatio
 This grid is used to select the server to be shown in the right panel, it also interacts with the button panel in the top.
 
 ###### Current Status grid
+Shows the current status of monitored servers.
 #### Right Panel
 ###### Server Details
+Utilized to show detailed information of monitored servers an also to edit or create new servers.
 ###### Historic data
-
+Shows all the historical monitor data for selected server.
 #### Endpoints
 Available endpoints are:
 
