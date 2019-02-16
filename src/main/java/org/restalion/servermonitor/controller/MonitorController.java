@@ -55,4 +55,9 @@ public class MonitorController {
 	public Boolean deactivate(@RequestParam("serverName") String serverName) {
 		return service.deactivate(serverName);
 	}
+	
+	@GetMapping("/remove")
+	public void remove(@RequestParam("serverName") String serverName) {
+		service.remove(serverName);
+	}
 }

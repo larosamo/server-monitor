@@ -101,4 +101,9 @@ public class MonitorServiceImpl implements MonitorService {
 	public void remove(ServerDto server) {
 		repo.delete(server);
 	}
+	
+	public void remove(String serverName) {
+		List<ServerDto> servers = repo.findByName(serverName);
+		servers.forEach(s -> repo.delete(s));
+	}
 }

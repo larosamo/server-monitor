@@ -14,4 +14,5 @@ public interface MonitorService {
 	public List<ServerDto> getServers();
 	public ServerDto save(ServerDto server);
 	public void remove(ServerDto server);
+	public void remove(String serverName);
 }
