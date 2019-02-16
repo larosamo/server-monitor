@@ -91,7 +91,7 @@ Shows the current status of monitored servers.
 ###### Server Details
 Utilized to show detailed information of monitored servers an also to edit or create new servers.
 ###### Historic data
-Shows all the historical monitor data for selected server.
+Shows all the historical monitor data for selected server.	
 #### Endpoints
 Available endpoints are:
 
