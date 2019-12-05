@@ -8,4 +8,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface MonitorRepository extends MongoRepository<MonitorDto, ObjectId> {
 	public List<MonitorDto> findByServerName(String serverName);
+	public MonitorDto findFirst1ByServerNameOrderByTimeDesc(String serverName);
+	public List<MonitorDto> findByServerNameOrderByTimeDesc(String serverName);
 }

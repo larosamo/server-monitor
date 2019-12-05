@@ -1,15 +1,19 @@
 package org.restalion.servermonitor.ui;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.restalion.servermonitor.dto.MonitorDto;
 import org.restalion.servermonitor.dto.ServerDto;
 import org.restalion.servermonitor.service.MonitorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.grid.Grid;
@@ -19,40 +23,124 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.renderer.IconRenderer;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
 import lombok.extern.slf4j.Slf4j;
 
+@Push
 @Theme(value = Lumo.class, variant = Lumo.DARK)
 @Route("dashboard")
 @Slf4j
+@Configuration
+@UIScope
 public class MainUI extends HorizontalLayout {
 	
+    private StatusThread thread;
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        // Start the data feed thread
+    	Boolean threadFound = false;
+    	Thread[] threads = new Thread[Thread.activeCount()];
+    	Thread.enumerate(threads);
+    	for (Thread  it : threads) {
+			if (it != null && it.getName().equals("statusThread")) {
+				log.debug("Thread statusThread is already running");
+				threadFound = true;
+			}
+		}
+    	if (!threadFound) {
+	    	log.debug("Creamos nuevo Thread");
+        	thread = new StatusThread(attachEvent.getUI(), this, serviceMonitor);
+	        thread.setName("statusThread");
+        	thread.start();
+	        log.debug("Thread " + thread.getName() + " creado");
+        } 
+    }
+    
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        // Cleanup
+       if (thread != null) {
+    	thread.interrupt();
+        thread = null;
+       }
+    }
+    
+    private static class StatusThread extends Thread {
+        private final UI ui;
+        private final MainUI view;
+        MonitorService threadService;
+       
+        public StatusThread(UI ui, MainUI view, MonitorService service) {
+            this.ui = ui;
+            this.view = view;
+            threadService = service;
+            
+        }
+
+        @Override
+        public void run() {
+        	try {
+        		// Update the data for a while
+                while (true) {
+                	Thread.sleep(view.timeInterval);
+                    log.debug("Refreshing status ");
+
+                    ui.access(() -> view.statusGrid.setItems(threadService.lastStatus()));
+                    if (!view.name.getValue().isEmpty()) {
+                    	ui.access(() -> view.historic.setItems(threadService.historic(view.name.getValue())));
+                    }
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+	
+	@Autowired
+	MonitorService serviceMonitor;
 	ServerDto serverInfo;
 	Binder<ServerDto> binder;
+	Binder<MonitorDto> binderMonitor;
 	Grid<MonitorDto> historic;
 	Grid<MonitorDto> statusGrid;
 	Grid<ServerDto> monitoredServers;
 	TextField name;
 	TextField url;
 	Checkbox active;
-
+	Button serverButton = new Button(" Servers Management");
+	@Value("${fixedRate}")
+    private long timeInterval;
+	
 	public MainUI(@Autowired MonitorService service) {
 		
 		add(createLeftPanel(service));
 		add(createRightPanel(service));
+		setSizeFull();
 		
 	}
-	
+
 	private VerticalLayout createRightPanel(MonitorService service) {
+		setHeight("800px");
 		VerticalLayout rightPanel = new VerticalLayout();
 		serverInfo = ServerDto.builder().build();
+		HorizontalLayout serverlayout = new HorizontalLayout();
 		Label serverDetail = new Label("Server Details");
+		serverlayout.add(serverDetail);
+		serverButton.setIcon(VaadinIcon.COG.create());
+		serverButton.addClickListener(e -> {
+			UI.getCurrent().navigate("setup");
+		});
+		serverlayout.add(serverButton);
+		serverlayout.setAlignItems(Alignment.BASELINE);
 		name = new TextField("Name");
 		name.setEnabled(Boolean.FALSE);
 		url = new TextField("URL");
@@ -79,7 +167,7 @@ public class MainUI extends HorizontalLayout {
                 item -> "")).setHeader("Status");
 		historic.addColumn(MonitorDto::getTime).setHeader("Timestamp").setSortable(Boolean.TRUE);
 		
-		rightPanel.add(serverDetail);
+		rightPanel.add(serverlayout);
 		rightPanel.add(name);
 		rightPanel.add(url);
 		rightPanel.add(active);
@@ -87,8 +175,7 @@ public class MainUI extends HorizontalLayout {
 		rightPanel.add(historic);
 		
 		return rightPanel;
-	}
-	
+	}	
 	private VerticalLayout createLeftPanel(MonitorService service) {
 		VerticalLayout leftPanel = new VerticalLayout();
 		statusGrid = new Grid<>();
@@ -97,6 +184,8 @@ public class MainUI extends HorizontalLayout {
 		Button saveButton = new Button("Save");
 		Button addButton = new Button("Add");
 		Button deleteButton = new Button("Delete");
+		binderMonitor = new Binder<>();
+		
 		
 		log.debug("Número de servidores registrados: " + service.getServers().size());
 		statusGrid.setItems(service.monitor());
@@ -106,6 +195,7 @@ public class MainUI extends HorizontalLayout {
                 item -> item.getStatus().equals("OK") ? createCircle("GREEN")
                         : createCircle("RED"),
                 item -> "")).setHeader("Status");
+		statusGrid.setHeightByRows(true);
 		
 		monitoredServers.setItems(service.getServers());
 		monitoredServers.addColumn(ServerDto::getName).setHeader("Server Name");
@@ -134,6 +224,7 @@ public class MainUI extends HorizontalLayout {
 				saveButton.setEnabled(Boolean.FALSE);
 			}
 		});
+		monitoredServers.setHeightByRows(true);
 		
 		Button refreshButton = new Button("Refresh Status");
 		refreshButton.setIcon(VaadinIcon.REFRESH.create());
