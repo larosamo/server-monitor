@@ -250,8 +250,8 @@ public class MonitorServiceImpl implements MonitorService {
 		managerRepo.delete(manager);
 	}
 	 private void sendEmail(List<MonitorDto> monitorResults) throws Exception{
-		  	MimeMessage message = sender.createMimeMessage();
-	        MimeMessageHelper helper = new MimeMessageHelper(message);
+		  	MimeMessage message = null; 
+		  	MimeMessageHelper helper = null;
 	        String[] to;
 	        LastReportSentDto lastSentDto;
 	        ManagerDto manager;
@@ -261,8 +261,11 @@ public class MonitorServiceImpl implements MonitorService {
 	        Calendar lastReportDate = Calendar.getInstance();
 	        
 	        Date auxDate = null;
-	        String messageBody = "Monitorizacion de Servidores PVC .\nSe han detectado fallos en la monitorizacion de los servidores.\n El siguiente servidor no está disponible:\n"; 
+	        String messageBody = "";
 	        for (MonitorDto it : monitorResults) {
+	        	message = sender.createMimeMessage(); 
+	        	helper = new MimeMessageHelper(message);
+	        	messageBody = "Monitorizacion de Servidores PVC .\nSe han detectado fallos en la monitorizacion de los servidores.\n El siguiente servidor no está disponible:\n";
 	        	managers.clear();
 	        	if (!it.getStatus().equals("OK")) {
 					managers = this.getManagedServersByServerAndActive(it.getServerName(),Boolean.TRUE);
@@ -290,14 +293,17 @@ public class MonitorServiceImpl implements MonitorService {
 				            index++;
 				        }; 
 						if (to.length>0) {
-							log.debug("Sending mail to " + to.length + " users");
+							log.debug("Sending mail for server "+ it.getServerName() + " to " + to.length + " users");
 							helper.setTo(to);
 							helper.setFrom(mailFrom);
 							messageBody = messageBody + "Server: " + it.getServerName() + "\n Estado: " + it.getStatus() + "\n"; 
 					        messageBody += "\n\n\nSi no desea seguir recibiendo noticaciones de este servidor acceda a la aplicación y desactive la notificación o elimine este servidor como mantenido por usted.";
-							helper.setText(messageBody);
-					        helper.setSubject("Sever monitoring: Server " +  it.getServerName() + " is not available");
-				        	sender.send(message);
+					        //log.debug("message: " + messageBody);
+					        helper.setText(messageBody);
+							//log.debug("subject: " + "Sever monitoring: Server " +  it.getServerName() + " is not available");
+							helper.setSubject("Sever monitoring: Server " +  it.getServerName() + " is not available");
+				        	//log.debug("send");
+					        sender.send(message);
 				        	//We sent the last notification date
 				        	managersData.forEach((k, v) -> { 
 				        		String[] managerAux = {k};  
