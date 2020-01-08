@@ -80,6 +80,7 @@ public class MonitorServiceImpl implements MonitorService {
 		for (ServerDto server:servers) {
 			if (server.getActive()) {
 				try {
+					log.debug("Checking URL: " + server.getUrl());
 					ResponseEntity<String> response = config.getRestTemplate().getForEntity(server.getUrl(), String.class);
 					HttpStatus statusCode = response.getStatusCode();
 					if (!statusCode.name().equals("OK")) {
